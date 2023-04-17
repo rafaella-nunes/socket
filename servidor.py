@@ -1,35 +1,31 @@
 import socket
 
-HOST = '127.0.0.1' 
-PORT = 5000  
+HOST = '' # escuta em todas as interfaces de rede
+PORT = 5000
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    
-    # Associa o socket ao endereço IP e porta utilizando o método bind da classe importada
-    s.bind((HOST, PORT))
+def tratar_mensagem(mensagem):
+    mensagem = mensagem.strip() # remove espaços em branco no início e fim da mensagem
+    if mensagem.endswith('s'): # verifica se a mensagem termina em "s"
+        return mensagem
+    else:
+        return None
 
-    # Procura por conexões e mensagens utilizando o método listen da classe importada
-    s.listen()
-    
-    print('Aguardando conexões...')
-    
-    # Aceita a primeira conexão que chegar
-    conexao, endereco = s.accept()
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as servidor:
+    servidor.bind((HOST, PORT))
+    servidor.listen()
+    print(f"Servidor ouvindo em {HOST}:{PORT}")
+
+    conexao, endereco_cliente = servidor.accept()
+    print(f"Conexão estabelecida com {endereco_cliente}")
+
     with conexao:
-        print('Conectado por', endereco)
-        
-        # Loop principal do servidor, enquanto nao receber uma mensagem vazia ele vai continuar a esperar mensagens
         while True:
-            
-            # Recebe a mensagem enviada pelo cliente
-            data = conexao.recv(1024)
-            
-            # Se não houver mensagem (mensagem nula), encerra o loop
-            if not data:
+            dados = conexao.recv(1024) # recebe até 1024 bytes de dados
+            mensagem = dados.decode('utf-8')
+            mensagem_valida = tratar_mensagem(mensagem)
+            if mensagem == 'tchau':
                 break
-            
-            # Exibe os dados recebidos no terminal
-            print(f'Dados recebidos: {data.decode()}')
-            
-            # Envia uma mensagem de confirmação de recebimento para o cliente
-            conexao.sendall(b'Recebido')
+            elif mensagem_valida:
+                print(f"Nova mensagem recebida: {mensagem_valida}")
+            else:
+                print(f"Mensagem inválida: {mensagem}")

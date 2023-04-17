@@ -1,27 +1,21 @@
 import socket
 
-HOST = '127.0.0.1'  
-PORT = 5000  
+HOST = 'localhost'
+PORT = 5000
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    
-    # Conecta ao servidor utilizando o método connect da classe importada
-    s.connect((HOST, PORT))
-    
-    # Loop principal do cliente
+def enviar_mensagem(mensagem):
+    mensagem_bytes = mensagem.encode('utf-8')
+    cliente.send(mensagem_bytes)
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as cliente:
+    cliente.connect((HOST, PORT))
+    print(f"Conexão estabelecida com {HOST}:{PORT}")
+
     while True:
-    
-        mensagem = input('Mensagem: ')
-        
-        # Se a mensagem for vazia, encerra o loop
-        if not mensagem:
-            break
-        
-        # Envia a mensagem para o servidor
-        s.sendall(mensagem.encode())
-        
-        # Recebe a confirmação de que chegou no servidor
-        data = s.recv(1024)
-        
-        # Exibe a mensagem recebida
-        print(f'Resposta do servidor: {data.decode()}')
+        mensagem = input("Digite uma mensagem que termine em 's': ")
+        mensagem_valida = mensagem.strip().endswith('s')
+        if mensagem_valida:
+            enviar_mensagem(mensagem)
+            # faça algo com a resposta do servidor aqui
+        else:
+            print("Mensagem inválida: a mensagem deve terminar em 's'")
