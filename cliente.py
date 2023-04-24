@@ -1,15 +1,27 @@
 import socket
+import threading
 
-HOST = 'localhost'
-PORT = 5000
+
+def cliente():
+    cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    try:
+        cliente.connect(('localhost', 5000))
+    except:
+        return print('\nNão foi possível conectar ao servidor!\n')
+    
+    username = input('Nome de usuário: ')
+    print('\nConectado!\n')
+
+    thread1 = threading.Thread(target=receber_mensagem, args=[cliente])
+    thread2 = threading.Thread(target=enviar_mensagem, args=[cliente, username])
+
+    thread1.start()
+    thread2.start()
 
 def enviar_mensagem(mensagem):
     mensagem_bytes = mensagem.encode('utf-8')
     cliente.send(mensagem_bytes)
-
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as cliente:
-    cliente.connect((HOST, PORT))
-    print(f"Conexão estabelecida com {HOST}:{PORT}")
 
     while True:
         mensagem = input("Digite uma mensagem que termine em 's': ")

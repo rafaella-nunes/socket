@@ -1,7 +1,7 @@
 import socket
 import threading
 
-max_connections = 10
+clientes = []
 
 HOST = 'localhost'
 PORT = 5000
@@ -19,16 +19,24 @@ def handle_client(conexao):
 
 
 def servidor():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # criar o socket do servidor
-    server_socket.bind((HOST, PORT)) 
-    server_socket.listen(max_connections) 
-    print(f'Servidor iniciado em {HOST}:{PORT}')
+
+    servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        servidor.bind(('localhost', 7777))
+        servidor.listen()
+
+    except:
+        return print('\nNão foi possível iniciar o servidor!\n')
 
     while True:
-        conexao, endereco = server_socket.accept() # aceitar uma nova conexão
+        cliente, endereco = servidor.accept()
         print(f'Nova conexão recebida de {endereco}')
-        thread = threading.Thread(target=handle_client, args=(conexao,)) # criar uma nova thread para lidar com a conexão
-        thread.start() # iniciar a thread
+        clientes.append(cliente)
+
+        thread = threading.Thread(target=tratar_mensagem, args=[cliente])
+        thread.start()
+
 
 
 def tratar_mensagem(mensagem):
