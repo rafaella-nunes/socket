@@ -13,9 +13,8 @@ def cliente():
     username = input('Nome de usuário: ')
     print('\nConectado!\n')
 
-    thread1 = threading.Thread(alvo=receber_mensagem, args=[cliente])
-    thread2 = threading.Thread(
-        alvo=enviar_mensagem, args=[cliente, username])
+    thread1 = threading.Thread(target=receber_mensagem, args=[cliente])
+    thread2 = threading.Thread(target=enviar_mensagem, args=[cliente, username])
 
     thread1.start()
     thread2.start()
