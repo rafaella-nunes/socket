@@ -51,5 +51,6 @@ def broadcast(mensagem, cliente):
 
 def apagar_cliente(cliente):
     clientes.remove(cliente)
-    socket.close(cliente)
-    return 'conexão encerrada'
+
+
+servidor()
